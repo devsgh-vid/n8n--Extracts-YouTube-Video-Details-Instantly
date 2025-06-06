@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workflow and Code Documentation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f9f9f9;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    pre {
+      background-color: #f4f4f4;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-container {
+      position: relative;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      font-size: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    blockquote {
+      background: #eef;
+      padding: 10px 15px;
+      border-left: 4px solid #88f;
+      margin: 20px 0;
+    }
+    a {
+      color: #0066cc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔗 Shared Files</h1>
+  <ul>
+    <li><strong>Agent Code:</strong> <a href="https://drive.google.com/file/d/1DeH1TT0CVExrz7hjlGmDjaNClRE6kcfV/view?usp=sharing" target="_blank">Google Drive Link</a></li>
+    <li><strong>Code for Visual Studio:</strong> <a href="https://drive.google.com/file/d/1zngkIdbuP_Z-FB674yaOeMW8wqLwy3b4/view?usp=sharing" target="_blank">Google Drive Link</a></li>
+  </ul>
+
+  <h1>⚙️ Workflow</h1>
+
+  <h2>🧩 Code Node: Process Video URLs</h2>
+  <div class="code-container">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre><code>const urls = $input.first().json.body.youtube_urls;
+
+const output = [];
+
+if (Array.isArray(urls)) {
+  urls.forEach((url, index) => {
+    output.push({
+      json: {
+        [`url${index + 1}`]: url
+      }
+    });
+  });
+} else {
+  output.push({
+    json: {
+      error: "youtube_urls is not an array."
+    }
+  });
+}
+
+return output;</code></pre>
+  </div>
+
+  <h2>🧩 Code Node: Code1</h2>
+  <div class="code-container">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre><code>const output = [];
+
+for (const item of $input.all()) {
+  const originalKeys = Object.keys(item.json);
+  const urlKey = originalKeys.find(k => k.startsWith('url'));
+
+  if (urlKey) {
+    output.push({
+      json: {
+        url: item.json[urlKey],
+        myNewField: 1
+      }
+    });
+  } else {
+    output.push({
+      json: {
+        error: "No URL key found.",
+        myNewField: 1
+      }
+    });
+  }
+}
+
+return output;</code></pre>
+  </div>
+
+  <h2>🧩 Code Node: Code</h2>
+  <div class="code-container">
+    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    <pre><code>const data = $input.first().json.data;
+
+if (!Array.isArray(data)) {
+  return [
+    {
+      json: {
+        paragraph: "No valid data array found."
+      }
+    }
+  ];
+}
+
+const paragraph = data
+  .map(item => item.text)
+  .filter(text => !!text)
+  .join(' ');
+
+return [
+  {
+    json: {
+      paragraph
+    }
+  }
+];</code></pre>
+  </div>
+
+  <h1>🤖 AI Agent Prompt</h1>
+  <blockquote>
+    You are a helpful and knowledgeable assistant.<br>
+    Use the provided transcript data to accurately answer user questions.<br>
+    Always respond clearly and directly, referencing specific parts of the transcript when needed.<br>
+    If the user asks for further explanation, insights, or details, use relevant information from the transcript to expand and support your response.<br>
+    Your goal is to be informative, transparent, and precise — don’t guess or assume anything not supported by the transcript.
+  </blockquote>
+
+  <script>
+    function copyCode(button) {
+      const code = button.nextElementSibling.innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        button.innerText = "Copied!";
+        setTimeout(() => (button.innerText = "Copy"), 2000);
+      });
+    }
+  </script>
+
+</body>
+</html>
